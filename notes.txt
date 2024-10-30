@@ -1,0 +1,9 @@
+// open prisma studio
+pnpx prisma studio
+
+// whenever you make a change on the schema model make sure to migrate using
+pnpx prisma migrate dev 
+
+// Introspect the database to make sure that your Prisma schema is up-to-date:
+prisma db pull
+
