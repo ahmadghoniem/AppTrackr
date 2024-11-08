@@ -1,4 +1,4 @@
-import db from "@/utils/db"
+import db from "@/lib/db"
 // to run the seed file pnpx tsx ./seed.ts
 // you could have used node ./seed.ts but this is only if it was a js file and node doesn't support running ts files
 // up until V22.6.0 you can use --experimental-strip-types flag to strip types and doesn't validate them though

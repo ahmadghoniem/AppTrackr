@@ -1,3 +1,6 @@
+
+>> problems i ran into and how did i solve it <<
+
 // open prisma studio
 pnpx prisma studio
 
@@ -7,3 +10,26 @@ pnpx prisma migrate dev
 // Introspect the database to make sure that your Prisma schema is up-to-date:
 prisma db pull
 
+>>TODO: <<
+1) zod validation for the items  !!!VALIDATION!!!
+3) to change indexing with row index and use the record id instead ✓✓
+4) check pagination issue reverting back to page 1 
+5) support for custom options 
+6) delete user
+7) colors for status. needs to work first!! ✓✓
+8) radix colors
+9) being able to change column order cool idea 
+10) pick a date reverting to the date after being removed  ✓✓
+11) delete record ✓✓
+12) being able to delete multiple records on selection
+13) resizeable columns
+14)  undo delete using notification
+
+>> problems i ran into and how did i solve it <<
+1) calling a server action from actions.ts in a client component (updateApplicationData in data-table)
+-- marking actions.ts with "use server" directive and updating function to be async functions so they could be used as server actions which can be called in a client and a server component
+
+2) state new value doesn't reflect when comparing it with new value on blur causing updateApplicationData to run twice
+-- the problem was that the data state wasn't being updated as it wasn't ??visibile?? inside of the function defined in the bigger one
+// stale state
+3)

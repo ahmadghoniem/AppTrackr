@@ -11,8 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Table } from "@tanstack/react-table"
 import { ApplicationDatum } from "./data-table"
 
-const dataTableFilter = (params: { table: Table<ApplicationDatum> }) => {
-  const table = params.table
+const dataTableFilter = ({ table }: { table: Table<ApplicationDatum> }) => {
   return (
     <div className="flex items-center py-4">
       <Input

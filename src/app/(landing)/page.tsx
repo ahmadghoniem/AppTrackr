@@ -4,7 +4,6 @@ import React, { useState } from "react"
 
 const Page = () => {
   const [count, setCount] = useState<number>(0)
-  console.log("test -rerenders")
   return (
     <div>
       page
