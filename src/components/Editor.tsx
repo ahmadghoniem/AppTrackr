@@ -33,9 +33,9 @@ const Editor = ({ columnMeta, initialValue, updateData }: EditorProps) => {
   // We need to keep and update the state of the cell normally controlled value
   const [value, setValue] = useState(initialValue)
   const handleChange = (newValue) => setValue(newValue)
-  const editorType = columnMeta.editorType
-  const placeholder = columnMeta.placeholder
-  const options = columnMeta.selectOptions
+  const editorType = columnMeta?.editorType
+  const placeholder = columnMeta?.placeholder
+  const options = columnMeta?.selectOptions
   // If the initialValue is changed external, sync it up with our state
   useEffect(() => {
     setValue(initialValue)
@@ -45,7 +45,7 @@ const Editor = ({ columnMeta, initialValue, updateData }: EditorProps) => {
     case "input":
       return (
         <Input
-          value={value as string}
+          value={(value as string) ?? ""}
           onChange={(e) => handleChange(e.target.value)}
           placeholder={placeholder}
           onBlur={(e) => updateData(e.target.value)}
@@ -70,7 +70,7 @@ const Editor = ({ columnMeta, initialValue, updateData }: EditorProps) => {
           <PopoverContent className="w-auto p-0">
             <Calendar
               mode="single"
-              selected={value}
+              selected={value as boolean}
               onSelect={(value) => (setValue(value), updateData(value))}
               required
               initialFocus

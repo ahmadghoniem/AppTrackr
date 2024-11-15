@@ -139,7 +139,6 @@ const columns: ColumnDef<ApplicationDatum>[] = [
   {
     accessorKey: "role",
     header: "Role",
-
     meta: {
       editorType: "input",
       placeholder: "Enter position role"
@@ -148,6 +147,7 @@ const columns: ColumnDef<ApplicationDatum>[] = [
   {
     accessorKey: "dateApplied",
     header: "Date Applied",
+    sortingFn: "datetime", // recommended for date columns
     // TODO: SORT BY DATE
     meta: {
       editorType: "datepicker"
@@ -171,10 +171,19 @@ const columns: ColumnDef<ApplicationDatum>[] = [
     }
   },
   {
+    accessorKey: "createdAt",
+    sortingFn: "datetime", // recommended for date columns
+    meta: {
+      editorType: "datepicker",
+      placeholder: "Enter job location"
+    }
+  },
+
+  {
     // Columns require an id when using a non-string header
     id: "actions",
     enableHiding: false,
-    cell: ({ cell, row, column }) => (
+    cell: ({ cell, row, column, table }) => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -185,7 +194,21 @@ const columns: ColumnDef<ApplicationDatum>[] = [
         <DropdownMenuContent align="end">
           <DropdownMenuLabel> Actions</DropdownMenuLabel>
           <DropdownMenuItem asChild>
-            <button onClick={() => deleteApplicationData(row.original.id)}>
+            <button
+              onClick={() => {
+                deleteApplicationData(row.original.id)
+                // Calculate pagination details
+                const PageCount = table.getPageCount()
+                const RowCount = table.getRowCount()
+                const pageSize = table.getState().pagination.pageSize
+                const isLastRowOnPage = RowCount % pageSize === 1
+
+                // If it's the last row on the page, navigate to the previous page
+                if (isLastRowOnPage && PageCount > 1) {
+                  table.previousPage()
+                }
+              }}
+            >
               remove
             </button>
           </DropdownMenuItem>

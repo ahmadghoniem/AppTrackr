@@ -10,8 +10,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  ColumnDef,
-  RowData
+  RowData,
+  SortingState
 } from "@tanstack/react-table"
 import {
   createApplicationData,
@@ -53,9 +53,12 @@ export default function DataTable({
 
   const [data, setData] = useState(applicationData)
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
+
   useEffect(() => {
+    skipAutoResetPageIndex()
     setData(applicationData)
   }, [applicationData])
+  console.log(data)
   // to be able to overwrite the internal automatically-managed state (columnFilter/sorting/columnVisibility/rowSelection) to produce the final state for the table.
   // log the output of columnFilter and use it to get the desired output by passing it to setColumnFilter
 
@@ -63,7 +66,6 @@ export default function DataTable({
   // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   // const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   // const [rowSelection, setRowSelection] = useState({})
-  console.log("test re-renders")
   const table = useReactTable({
     data,
     columns,
@@ -72,23 +74,34 @@ export default function DataTable({
     getSortedRowModel: getSortedRowModel(), // to be able to sort using toggleSorting found in data-table-columns
     getFilteredRowModel: getFilteredRowModel(), // to be able to filter using filter by company name
     getPaginationRowModel: getPaginationRowModel(), // to be able to use pagination functionality
-    autoResetPageIndex: false,
-    autoResetExpanded
+    autoResetPageIndex: autoResetPageIndex,
+
+    // autoResetExpanded,
     // onPaginationChange: setPagination,
-    // onSortingChange: setSorting,
     // onColumnFiltersChange: setColumnFilters,
     // onColumnVisibilityChange: setColumnVisibility,
     // onRowSelectionChange: setRowSelection,
-
+    initialState: {
+      pagination: {
+        pageSize: 5
+      },
+      columnVisibility: {
+        createdAt: false,
+        select: false
+      },
+      sorting: [
+        {
+          id: "createdAt",
+          desc: false
+        }
+      ]
+    },
     meta: {
       updateData: async (getValue, rowIndex, columnId, recordId, value) => {
-        skipAutoResetPageIndex()
         if (getValue() === value) return
-        console.log("didn't get early returned")
         // Skip page index reset until after next rerender]
-
+        skipAutoResetPageIndex()
         const res = await updateApplicationData(recordId, columnId, value)
-        console.log(res)
         setData((old) =>
           old.map((row, index) => {
             if (index === rowIndex) {
@@ -103,12 +116,25 @@ export default function DataTable({
       }
     }
   })
+  console.log(table.getCanNextPage()) // access the sorting state from the table instance
   return (
     <div className="w-full ">
       <div className="flex justify-between items-center">
         <DataTableFilter table={table} />
         <Button
-          onClick={() => (createApplicationData(), skipAutoResetPageIndex())}
+          onClick={() => {
+            createApplicationData()
+            const numberOfPages = table.getPageCount()
+            const pageSize = table.getState().pagination.pageSize
+            const numberOfRows = table.getRowCount()
+            const pageIndex = table.getState().pagination.pageIndex
+            if (
+              numberOfRows === pageSize * numberOfPages ||
+              table.getCanNextPage()
+            ) {
+              table.setPageIndex(pageIndex + 1) // Sets the page index to the last page.
+            }
+          }}
         >
           <Plus /> add a new record
         </Button>
@@ -122,20 +148,4 @@ export default function DataTable({
       <DataTablePagination table={table} />
     </div>
   )
-}
-
-{
-  // an example of setting Column Filters beneficial for "hide all" or "show all"
-  /* <Button
-onClick={() =>
-  setColumnFilters([
-    {
-      id: "companyName",
-      value: "n"
-    }
-  ])
-}
->
-click to noon
-</Button> */
 }
